@@ -131,14 +131,14 @@ Jawascript now supports an optional static type system, similar to GDScript or T
 **Syntax:**
 
 -   **Variable Declarations:**
-    ```jawascript
+```jawascript
 jarno umur: Angka = 30;
 iki iku jeneng: Teks = "Budi";
 jarno isAktif: Logika = tenan;
-    ```
+```
 
 -   **Function Parameters and Return Types:**
-    ```jawascript
+```jawascript
 gawe sapa(jeneng: Teks): Teks terus
   balekno "Halo " tambah jeneng;
 mbari
@@ -146,17 +146,17 @@ mbari
 gawe tambah(a: Angka, b: Angka): Angka terus
   balekno a tambah b;
 mbari
-    ```
+```
 
 -   **Arrow Functions (Parameters and Return Types):**
-    ```jawascript
+ ```jawascript
 jarno getUmur = (tahunLahir: Angka): Angka lakoni
   balekno 2025 kurang tahunLahir;
 
 jarno cetakInfo = (pesan: Teks, jumlah: Angka): OraOno lakoni terus
   cetakno(pesan tambah ": " tambah jumlah);
 mbari;
-    ```
+ ```
 
 **Supported Basic Types:**
 -   `Angka` (JavaScript `number`)
