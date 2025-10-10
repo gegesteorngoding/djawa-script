@@ -2,6 +2,14 @@
   "name": "@jawirhytam/jawirscript",
   "version": "1.12.3",
   "description": "Jawascript is a programming language for someone who did'nt understand English very much.",
+  "homepage": "https://github.com/gegesteorngoding/djawa-script#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gegesteorngoding/djawa-script.git"
+  },
+  "bugs": {
+    "url": "https://github.com/gegesteorngoding/djawa-script/issues"
+  },
   "bin": {
     "jawir": "./cli.js"
   },
