@@ -11,7 +11,7 @@ import { fileURLToPath } from 'url';
 
 function showHelp() {
   console.log(`
-Usage: jawir <command> [options]
+Usage: djawa <command> [options]
 
 Commands:
   run <file>         Transpile and run a .jawa file.
@@ -21,8 +21,8 @@ Commands:
   help, -h           Show this help message.
 
 Examples:
-  jawir run example.jawa
-  jawir make myapp.jawa
+  djawa run example.jawa
+  djawa make myapp.jawa
   `);
 }
 

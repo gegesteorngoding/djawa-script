@@ -1,5 +1,5 @@
 {
-  "name": "@jawirhytam/jawirscript",
+  "name": "@jawirhytam/djawascript",
   "version": "1.12.4",
   "description": "Jawascript is a programming language for someone who did'nt understand English very much.",
   "homepage": "https://github.com/gegesteorngoding/djawa-script#readme",
@@ -11,7 +11,7 @@
     "url": "https://github.com/gegesteorngoding/djawa-script/issues"
   },
   "bin": {
-    "jawir": "./cli.js"
+    "djawa": "./cli.js"
   },
   "main": "dictionary.js",
   "scripts": {

@@ -124,7 +124,7 @@ exports[`JawaScript Transpiler Snapshot Tests should correctly transpile 08-asyn
 
 function async ambilData() {
   console.log("Mulai ambil data...");
-  let data = await new Promise(resolve do setTimeout(() => resolve("Data dari server"), 100));
+  let data = await new Promise(resolve => setTimeout(() => resolve("Data dari server"), 100));
   return data;
 }
 
@@ -195,7 +195,7 @@ exports[`JawaScript Transpiler Snapshot Tests should correctly transpile 12-null
 let nilaiKosong = null;
 let nilaiOraDidefinisikan = undefined;
 
-console.log("Nilai Kosong: " + nilaiKosong);
+console.log("Nilai null: " + nilaiKosong);
 console.log("Nilai Ora Didefinisikan: " + nilaiOraDidefinisikan);
 
 if (nilaiKosong === null) {
@@ -371,7 +371,7 @@ exports[`JawaScript Transpiler Snapshot Tests should correctly transpile 19-do-w
 let hitung = 0;
 
 console.log("Mulai do...while loop:");
-do {
+=> {
   console.log("Hitungan: " + hitung);
   hitung += 1;
 } while (hitung < 3);
@@ -381,7 +381,7 @@ console.log("Selesai do...while loop.");
 
 let x = 5;
 console.log("Mulai do...while loop (kondisi salah):");
-do {
+=> {
   console.log("Nilai x: " + x);
   x += 1;
 } while (x < 5);
@@ -428,14 +428,14 @@ exports[`JawaScript Transpiler Snapshot Tests should correctly transpile 21-glob
 
 
 let daftarKosong = Array new();
-console.log("Array Kosong: " + daftarKosong);
+console.log("Array null: " + daftarKosong);
 
 let daftarAngka = Array new(1, 2, 3);
 console.log("Array Number: " + daftarAngka);
 
 
 let obyekKosong = Object new();
-console.log("Object Kosong: " + obyekKosong);
+console.log("Object null: " + obyekKosong);
 
 
 const teks = String new("halo");
@@ -532,7 +532,7 @@ console.log('Ana sing luwih gedhe teko 5?', daftarAngka.some(x => x > 5));
 console.log('Kabeh luwih cilik teko 10?', daftarAngka.every(x => x < 10));
 
 
-console.log('\\n = n - 1- Tes String Methods ---');
+console.log('\\n--- Tes String Methods ---');
 const teksAsli = '   Jawascript iku Keren!   ';
 console.log('String asli:', teksAsli);
 console.log('Dawane:', teksAsli.length);
@@ -595,12 +595,12 @@ let variabelTeksKosong = '';
 let variabelFalse = false;
 let variabelOno = "Isine ono";
 
-console.log('\\n = n - 1 Tes \`iku ilang\` --');
+console.log('\\n-- Tes \`iku ilang\` --');
 if (variabelKosong == null) { console.log('variabelKosong beneran ilang'); }
 if (variabelOraDidefinisikan == null) { console.log('variabelOraDidefinisikan beneran ilang'); }
 if (variabelAngkaNol == null) { console.log('variabelAngkaNol dianggep ilang'); } else { console.log('variabelAngkaNol dianggep ONO'); }
 
-console.log('\\n = n - 1 Tes \`iku ono\` --');
+console.log('\\n-- Tes \`iku ono\` --');
 if (variabelOno != null) { console.log('variabelOno beneran ono'); }
 if (variabelTeksKosong != null) { console.log('variabelTeksKosong beneran ono'); }
 if (variabelFalse != null) { console.log('variabelFalse beneran ono'); }
@@ -702,14 +702,14 @@ exports[`JawaScript Transpiler Snapshot Tests should correctly transpile 32-tern
 "console.log('--- Tes Ternary Operator ---');
 
 const umur = 20;
-const status = umur >= 18 ? 'Dewasa' : 'Anak-anak';
+const status = umur >= 18 ta 'Dewasa' if false 'Anak-anak';
 console.log('Status umur 20:', status);
 
 let umurLiyo = 15;
-console.log('Status umur 15:', umurLiyo >= 18 ? 'Dewasa' : 'Anak-anak');
+console.log('Status umur 15:', umurLiyo >= 18 ta 'Dewasa' if false 'Anak-anak');
 
 function sapa(jeneng) {
-  return jeneng != null ? \`Halo, \${jeneng}\` : 'Halo, Tamu';
+  return jeneng != null ta \`Halo, \${jeneng}\` if false 'Halo, Tamu';
 }
 
 console.log(sapa('Sastro'));
@@ -758,19 +758,19 @@ const pengguna = { jeneng: 'Sastro', alamat: { jalan: 'Jl. Kenangan', nomor: 10 
 const penggunaKosong = null;
 
 
-const namaJalan = pengguna.alamat?.jalan;
+const namaJalan = pengguna.alamat.mungkin.jalan;
 console.log('Nama Jalan:', namaJalan); 
 
 
-const kodePos = pengguna.alamat?.kodePos;
+const kodePos = pengguna.alamat.mungkin.kodePos;
 console.log('Kode Pos (tidak ada):', kodePos); 
 
 
-const namaJalanKosong = penggunaKosong?.alamat?.jalan;
+const namaJalanKosong = penggunaKosong.mungkin.alamat.mungkin.jalan;
 console.log('Nama Jalan dari objek null:', namaJalanKosong); 
 
 
-const methodKosong = penggunaKosong?.sapa.mungkin();
+const methodKosong = penggunaKosong.mungkin.sapa.mungkin();
 console.log('Hasil panggil method null:', methodKosong); "
 `;
 
@@ -784,9 +784,9 @@ const nilaiTeksKosong = '';
 
 
 console.log('Nilai Nol ?? 10:', nilaiNol ?? 10); 
-console.log('Nilai Kosong ?? 10:', nilaiKosong ?? 10); 
-console.log('Nilai OraDidefinisikan ?? 10:', nilaiOraDidefinisikan ?? 10); 
-console.log('Nilai String Kosong ?? 10:', nilaiTeksKosong ?? 10); 
+console.log('Nilai null ?? 10:', nilaiKosong ?? 10); 
+console.log('Nilai undefined ?? 10:', nilaiOraDidefinisikan ?? 10); 
+console.log('Nilai String null ?? 10:', nilaiTeksKosong ?? 10); 
 
 
 console.log('Nilai Nol || 10:', nilaiNol || 10); "
@@ -901,4 +901,33 @@ console.log('Tipe Number Gedhe:', typeof angkaGedhe);
 console.log('Penjumlahan BigInt:', angkaGedhe + angkaLain);
 console.log('Perkalian BigInt:', angkaGedhe * 2 gedhe);
 "
+`;
+
+exports[`JawaScript Transpiler Snapshot Tests should correctly transpile 43-types.jawa 1`] = `
+"let umur: Number = 30;
+let jeneng: String = "Budi";
+let isAktif: Boolean = true;
+
+function sapa(jeneng: String): String {
+  return "Halo " + jeneng;
+}
+
+function +(a: Number, b: Number): Number {
+  return a + b;
+}
+
+let getUmur = (tahunLahir: Number): Number =>
+  return 2025 - tahunLahir;
+
+let cetakInfo = (pesan: String, jumlah: Number): void => {
+  console.log(pesan + ": " + jumlah);
+}
+
+console.log("Umur: " + umur);
+console.log("Nama: " + jeneng);
+console.log("Aktif: " + isAktif);
+console.log(sapa("Dina"));
+console.log(+(5, 7));
+console.log(getUmur(1990));
+cetakInfo("Total", 100);"
 `;

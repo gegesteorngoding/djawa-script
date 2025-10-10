@@ -1,0 +1,26 @@
+jarno umur: Angka = 30;
+jarno jeneng: Teks = "Budi";
+jarno isAktif: Logika = tenan;
+
+gawe sapa(jeneng: Teks): Teks terus
+  balekno "Halo " + jeneng;
+mbari
+
+gawe tambah(a: Angka, b: Angka): Angka terus
+  balekno a + b;
+mbari
+
+jarno getUmur = (tahunLahir: Angka): Angka lakoni
+  balekno 2025 - tahunLahir;
+
+jarno cetakInfo = (pesan: Teks, jumlah: Angka): OraOno lakoni terus
+  cetakno(pesan + ": " + jumlah);
+mbari
+
+cetakno("Umur: " + umur);
+cetakno("Nama: " + jeneng);
+cetakno("Aktif: " + isAktif);
+cetakno(sapa("Dina"));
+cetakno(tambah(5, 7));
+cetakno(getUmur(1990));
+cetakInfo("Total", 100);

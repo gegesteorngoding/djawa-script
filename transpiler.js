@@ -38,35 +38,64 @@ function transpile(code) {
   // 2. Transpile the rest of the code.
   let resultCode = processedCode.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '');
 
-  resultCode = resultCode.replace(/(\w+)\+\+/g, '$1 yoiku $1 tambah 1');
-  resultCode = resultCode.replace(/(\w+)\-\-/g, '$1 yoiku $1 kurang 1');
+  resultCode = resultCode.replace(/(\\w+)\\+\\+/g, '$1 yoiku $1 tambah 1');
+  resultCode = resultCode.replace(/(\\w+)\\-\\-/g, '$1 yoiku $1 kurang 1');
 
   // Handle Optional Chaining: .mungkin.
-  resultCode = resultCode.replace(/\.mungkin\./g, '?.');
+  resultCode = resultCode.replace(/\\.mungkin\\./g, '?.');
 
   // Handle Ternary Operator: ... ta ... lek gak ...
-  resultCode = resultCode.replace(/\s+ta\s+/g, ' ? ');
-  resultCode = resultCode.replace(/\s+lek gak\s+/g, ' : ');
+  resultCode = resultCode.replace(/\\s+ta\\s+/g, ' ? ');
+  resultCode = resultCode.replace(/\\s+lek gak\\s+/g, ' : ');
 
   // Handle `for...in` loop
-  const forInRegex = /(kanggo)\s+\((iki iku|jarno)\s+(\w+)\s+ing\s+([\w.]+)\)\s+terus([\s\S]*?)mbari/g;
+  const forInRegex = /(kanggo)\\s+\\((iki iku|jarno)\\s+(\\w+)\\s+ing\\s+([\\w.]+)\\)\\s+terus([\\s\\S]*?)mbari/g;
   resultCode = resultCode.replace(forInRegex, (match, loopKeyword, varKeyword, keyVar, objectVar, body) => {
     return `for (${varKeyword} ${keyVar} in ${objectVar}) {${body}}`;
   });
 
-  // Handle Arrow Functions
+  // Handle Type Annotations for variables
+  resultCode = resultCode.replace(/\\b(iki iku|jarno)\\s+([a-zA-Z_][a-zA-Z0-9_]*)\\s*:\\s*([a-zA-Z_][a-zA-Z0-9_]*)/g, (match, keyword, varName, type) => {
+    return `${keyword} ${varName}: ${type}`;
+  });
+
+  // Handle `gawe` functions with type annotations
+  const gaweFunctionRegex = /(gawe)\\s+([a-zA-Z_][a-zA-Z0-9_]*)\\s*\\((.*?)\\)\\s*(:\\s*([a-zA-Z_][a-zA-Z0-9_]*))?\\s*terus([\\s\\S]*?)mbari/g;
+  resultCode = resultCode.replace(gaweFunctionRegex, (match, gaweKeyword, funcName, paramsContent, returnTypeGroup, returnType, body) => {
+    // Process parameters for types
+    const processedParams = paramsContent.replace(/([a-zA-Z_][a-zA-Z0-9_]*)\\s*:\\s*([a-zA-Z_][a-zA-Z0-9_]*)/g, (pMatch, pName, pType) => {
+      return `${pName}: ${pType}`;
+    });
+    const finalReturnType = returnType ? ': ' + returnType : '';
+    const actualFuncName = (funcName === 'tambah') ? '__FUNC_TAMBAH__' : funcName;
+    return `function ${actualFuncName}(${processedParams})${finalReturnType} {${body}}`;
+  });
+
+  // Handle Arrow Functions with type annotations
   // Version with block body: (params) lakoni terus ... mbari
-  const arrowBlockRegex = /(?:(\w+)|(\(.*?\)))\s+lakoni\s*terus([\s\S]*?)mbari/g;
-  resultCode = resultCode.replace(arrowBlockRegex, (match, param, params, body) => {
-    const finalParams = params || param;
-    return `${finalParams} => {${body}}`;
+  const arrowBlockRegex = /(?:(\\w+)|(\\(.*?\\)))\\s*(:\\s*([a-zA-Z_][a-zA-Z0-9_]*))?\\s+lakoni\\s*terus([\\s\\S]*?)mbari/g;
+  resultCode = resultCode.replace(arrowBlockRegex, (match, param, paramsGroup, returnTypeGroup, returnType, body) => {
+    let finalParams = paramsGroup || param;
+    if (paramsGroup) { // If it's a parenthesized list, process parameters for types
+      finalParams = paramsGroup.replace(/([a-zA-Z_][a-zA-Z0-9_]*)\\s*:\\s*([a-zA-Z_][a-zA-Z0-9_]*)/g, (pMatch, pName, pType) => {
+        return `${pName}: ${pType}`;
+      });
+    }
+    const finalReturnType = returnType ? ': ' + returnType : '';
+    return `${finalParams}${finalReturnType} => {${body}}`;
   });
 
   // Version with implicit return: (params) lakoni expression
-  const arrowImplicitRegex = /(?:(\w+)|(\(.*?\)))\s+lakoni\s+([^;\n]*)/g;
-  resultCode = resultCode.replace(arrowImplicitRegex, (match, param, params, expression) => {
-    const finalParams = params || param;
-    return `${finalParams} => ${expression.trim()}`;
+  const arrowImplicitRegex = /(?:(\\w+)|(\\(.*?\\)))\\s*(:\\s*([a-zA-Z_][a-zA-Z0-9_]*))?\\s+lakoni\\s+([^;\\n]*)/g;
+  resultCode = resultCode.replace(arrowImplicitRegex, (match, param, paramsGroup, returnTypeGroup, returnType, expression) => {
+    let finalParams = paramsGroup || param;
+    if (paramsGroup) { // If it's a parenthesized list, process parameters for types
+      finalParams = paramsGroup.replace(/([a-zA-Z_][a-zA-Z0-9_]*)\\s*:\\s*([a-zA-Z_][a-zA-Z0-9_]*)/g, (pMatch, pName, pType) => {
+        return `${pName}: ${pType}`;
+      });
+    }
+    const finalReturnType = returnType ? ': ' + returnType : '';
+    return `${finalParams}${finalReturnType} => ${expression.trim()}`;
   });
 
   // Handle `iku ilang` and `iku ono`
@@ -90,6 +119,17 @@ function transpile(code) {
   const destructuringArrayRegex = /(iki iku|jarno)\s+\[([\s\S]*?)\]\s+yoiku/g;
   resultCode = resultCode.replace(destructuringArrayRegex, (match, keyword, content) => {
     return `${keyword} [${content}] =`;
+  });
+
+  // Handle Type Annotations for variables and function parameters/return types
+  // This needs to run before general keyword replacement to correctly identify types
+  resultCode = resultCode.replace(/\b(iki iku|jarno)\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*:\s*([a-zA-Z_][a-zA-Z0-9_]*)/g, (match, keyword, varName, type) => {
+    return `${keyword} ${varName}: ${type}`;
+  });
+
+  // Handle function return types
+  resultCode = resultCode.replace(/(gawe\s+[a-zA-Z_][a-zA-Z0-9_]*\s*\(.*?\))\s*:\s*([a-zA-Z_][a-zA-Z0-9_]*)/g, (match, funcSignature, returnType) => {
+    return `${funcSignature}: ${returnType}`;
   });
 
   const extendsRegex = /\bkelas\s+(\w+)\s+turunan soko\s+(\w+)\s*terus([\s\S]*?)mbari/g;
@@ -142,6 +182,9 @@ function transpile(code) {
   
   // Then, replace all boundary-based keywords
   resultCode = resultCode.replace(boundaryRegex, match => boundaryKeywords[match]);
+
+  // Restore specific function names that were temporarily replaced
+  resultCode = resultCode.replace(/__FUNC_TAMBAH__/g, 'tambah');
 
   // 3. Restore the processed template literals
   resultCode = resultCode.replace(/__TEMPLATE_LITERAL_(\d+)__/g, (match, index) => literals[index]);

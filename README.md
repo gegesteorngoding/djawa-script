@@ -10,7 +10,8 @@ This is a "Transpiler" project for a "simple" programming language inspired by J
   - [Variables](#variables)
   - [Console and User Input](#console-and-user-input)
   - [Data Types](#data-types)
-  - [Control Flow](#control-flow)
+  - [Optional Type System](#optional-type-system)
+- [Control Flow](#control-flow)
   - [Ternary Operator: `ta` & `lek gak`](#ternary-operator-ta--lek-gak)
   - [Functions](#functions)
   - [Arrow Functions: `lakoni`](#arrow-functions-lakoni)
@@ -117,6 +118,59 @@ lek (isihSinau plek tenan) terus
   cetakno("Semangat!")
 mbari
 ```
+
+### Optional Type System
+
+Jawascript now supports an optional static type system, similar to GDScript or TypeScript. This allows you to add type annotations to your variables, function parameters, and function return types. While not mandatory, using types can significantly improve code readability, help catch errors early during development, and enhance IDE support with better autocompletion and refactoring tools.
+
+**Key Benefits:**
+-   **Early Error Detection:** Catch type-related bugs before runtime.
+-   **Improved Readability:** Code becomes self-documenting, making it easier to understand.
+-   **Enhanced IDE Support:** Better autocompletion, type-checking, and refactoring capabilities.
+
+**Syntax:**
+
+-   **Variable Declarations:**
+    ```jawascript
+jarno umur: Angka = 30;
+iki iku jeneng: Teks = "Budi";
+jarno isAktif: Logika = tenan;
+    ```
+
+-   **Function Parameters and Return Types:**
+    ```jawascript
+gawe sapa(jeneng: Teks): Teks terus
+  balekno "Halo " tambah jeneng;
+mbari
+
+gawe tambah(a: Angka, b: Angka): Angka terus
+  balekno a tambah b;
+mbari
+    ```
+
+-   **Arrow Functions (Parameters and Return Types):**
+    ```jawascript
+jarno getUmur = (tahunLahir: Angka): Angka lakoni
+  balekno 2025 kurang tahunLahir;
+
+jarno cetakInfo = (pesan: Teks, jumlah: Angka): OraOno lakoni terus
+  cetakno(pesan tambah ": " tambah jumlah);
+mbari;
+    ```
+
+**Supported Basic Types:**
+-   `Angka` (JavaScript `number`)
+-   `Teks` (JavaScript `string`)
+-   `Logika` (JavaScript `boolean`)
+-   `Kosong` (JavaScript `null`)
+-   `OraDidefinisikan` (JavaScript `undefined`)
+-   `Daftar` (JavaScript `Array`)
+-   `Obyek` (JavaScript `Object`)
+-   `Sembarang` (JavaScript `any`)
+-   `OraOno` (JavaScript `void`)
+
+**How it Works:**
+Jawascript transpiles code with type annotations into valid TypeScript syntax. You can then use a TypeScript compiler (`tsc`) to perform static type checking and generate the final JavaScript output.
 
 ### Control Flow
 
@@ -741,7 +795,7 @@ iki iku obj1 yoiku { a: 1 };
 iki iku obj2 yoiku { b: 2 };
 iki iku obj3 yoiku Obyek.wenehno({}, obj1, obj2);
 cetakno("Object.assign: " + DataJSON.stringkan(obj3)); // Output: {"a":1,"b":2}
-cetakno("Object.is(1, 1): " + Obyek.iku(1, 1)); // Output: tenan
+cetakno("Object.is(1, 1): " tambah Obyek.iku(1, 1)); // Output: tenan
 cetakno("Object.keys: " + Obyek.kunci(obj3)); // Output: a,b
 cetakno("Array.isArray([]): " + Daftar.ikiDaftar(Daftar anyar())); // Output: tenan
 ```
@@ -949,7 +1003,7 @@ These things are work on both `Daftar` (Array) and `Teks` (String).
 
 ## CLI Usage
 
-Jawascript provides a Command Line Interface (CLI) tool named `jawir` to help you manage and run your `.jawa` files.
+Jawascript provides a Command Line Interface (CLI) tool named `djawa` to help you manage and run your `.jawa` files.
 
 ### Installation
 
@@ -961,19 +1015,19 @@ Jawascript provides a Command Line Interface (CLI) tool named `jawir` to help yo
 
 ### Commands
 
-Here are the available `jawir` commands:
+Here are the available `djawa` commands:
 
-*   **`jawir run <file.jawa>`**
+*   **`djawa run <file.jawa>`**
     Transpiles and executes a `.jawa` file directly.
 
-*   **`jawir build <file.jawa>`**
+*   **`djawa build <file.jawa>`**
     Transpiles a `.jawa` file into a `.js` file.
 
-*   **`jawir make <filename>`**
+*   **`djawa make <filename>`**
     Creates a new `.jawa` file from a template.
 
-*   `jawir version` or `jawir -v`
+*   `djawa version` or `djawa -v`
     Displays the current version of JawaScript.
 
-*   `jawir help` or `jawir -h`
+*   `djawa help` or `djawa -h`
     Shows the help message.

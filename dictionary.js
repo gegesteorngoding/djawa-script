@@ -62,8 +62,19 @@ const dictionary = {
   'entuk': 'get',
   'pasang': 'set',
   'anyar': 'new',
-  'lakoni': 'do',
+  'lakoni': '=>',
   'asilno': 'yield',
+
+  // --- Types for Optional Type System ---
+  'Angka': 'number',
+  'Teks': 'string',
+  'Logika': 'boolean',
+  'Kosong': 'null',
+  'OraDidefinisikan': 'undefined',
+  'Daftar': 'Array', // Reusing existing constructor for type
+  'Obyek': 'Object', // Reusing existing constructor for type
+  'Sembarang': 'any',
+  'OraOno': 'void',
 
   // Single character operators
   'tambah': '+',
