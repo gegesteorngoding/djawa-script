@@ -1,0 +1,68 @@
+// Test for new operators
+
+jarno a yoiku 10;
+jarno b yoiku 5;
+
+// Arithmetic
+cetakno(a tambah b); // 15
+cetakno(a kurang b); // 5
+cetakno(a ping b);   // 50
+cetakno(a bagi b);   // 2
+cetakno(a siso 3);   // 1
+
+// Comparators
+lek (a luwihGedhe b) {
+  cetakno("a luwih gedhe");
+}
+
+lek (b luwihCilik a) {
+  cetakno("b luwih cilik");
+}
+
+lek (a tambah b podo 15) {
+  cetakno("podo bener");
+}
+
+lek (15 plek 15) {
+  cetakno("plek bener");
+}
+
+lek (a gakPodo b) {
+  cetakno("gak podo bener");
+}
+
+lek ("15" gakPlek 15) {
+  cetakno("gak plek bener");
+}
+
+jarno c yoiku 10;
+lek (a luwihGedhePodo c) {
+  cetakno("a luwih gedhe podo c");
+}
+
+lek (b luwihCilikPodo c) {
+  cetakno("b luwih cilik podo c");
+}
+
+// Test for new assignment and exponentiation operators
+cetakno(2 pangkat 3) // 8
+
+jarno x yoiku 10
+x tambahKaro 5 // x is now 15
+cetakno(x)
+
+jarno y yoiku 10
+y kurangKaro 2 // y is now 8
+cetakno(y)
+
+jarno z yoiku 10
+z pingKaro 3 // z is now 30
+cetakno(z)
+
+jarno w yoiku 10
+w bagiKaro 2 // w is now 5
+cetakno(w)
+
+jarno v yoiku 10
+v sisoKaro 3 // v is now 1
+cetakno(v)

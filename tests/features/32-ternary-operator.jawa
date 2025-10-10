@@ -1,0 +1,15 @@
+cetakno('--- Tes Ternary Operator ---');
+
+iki iku umur yoiku 20;
+iki iku status yoiku umur luwihGedhePodo 18 ta 'Dewasa' lek gak 'Anak-anak';
+cetakno('Status umur 20:', status);
+
+jarno umurLiyo yoiku 15;
+cetakno('Status umur 15:', umurLiyo luwihGedhePodo 18 ta 'Dewasa' lek gak 'Anak-anak');
+
+gawe sapa(jeneng) terus
+  balekno jeneng iku ono ta `Halo, ${jeneng}` lek gak 'Halo, Tamu';
+mbari
+
+cetakno(sapa('Sastro'));
+cetakno(sapa(kosong));

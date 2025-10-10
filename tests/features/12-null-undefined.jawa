@@ -1,0 +1,15 @@
+// Test for null and undefined keywords
+
+jarno nilaiKosong = kosong;
+jarno nilaiOraDidefinisikan = oraDidefinisikan;
+
+cetakno("Nilai Kosong: " + nilaiKosong);
+cetakno("Nilai Ora Didefinisikan: " + nilaiOraDidefinisikan);
+
+lek (nilaiKosong === kosong) terus
+  cetakno("nilaiKosong adalah kosong");
+mbari
+
+lek (nilaiOraDidefinisikan === oraDidefinisikan) terus
+  cetakno("nilaiOraDidefinisikan adalah oraDidefinisikan");
+mbari

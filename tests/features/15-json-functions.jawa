@@ -1,0 +1,8 @@
+// Test JSON built-in functions
+
+jarno objek = { "jeneng": "Budi", "umur": 30 };
+jarno stringObjek = DataJSON.stringkan(objek);
+cetakno("Stringified object: " + stringObjek);
+
+jarno parsedObjek = DataJSON.urai(stringObjek);
+cetakno("Parsed object jeneng: " + parsedObjek.jeneng);

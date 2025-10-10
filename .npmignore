@@ -1,0 +1,8 @@
+node_modules
+tests
+*.snap
+*.test.js
+.DS_Store
+.git
+.gitignore
+CHANGELOG.md

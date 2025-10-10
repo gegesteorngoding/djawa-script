@@ -1,0 +1,14 @@
+cetakno('--- Tes `for...in` Loop ---');
+
+iki iku pengguna yoiku { jeneng: 'Sastro', umur: 30, kota: 'Jogja' };
+
+cetakno('Properti pengguna:');
+kanggo (iki iku kunci ing pengguna) terus
+  cetakno(`${kunci}: ${pengguna[kunci]}`);
+mbari
+
+jarno mobil yoiku { merk: 'Toyota', model: 'Avanza' };
+cetakno('Properti mobil:');
+kanggo (jarno prop ing mobil) terus
+  cetakno(`${prop}: ${mobil[prop]}`);
+mbari

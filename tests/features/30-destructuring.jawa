@@ -1,0 +1,28 @@
+cetakno('--- Tes Destructuring ---');
+
+// 1. Object Destructuring
+iki iku pengguna yoiku { jeneng: "Sastro", umur: 30, kota: "Jogja" };
+iki iku { jeneng, umur } yoiku pengguna;
+cetakno("Jeneng:", jeneng);
+cetakno("Umur:", umur);
+
+// 2. Array Destructuring
+jarno angka yoiku [10, 20, 30];
+jarno [a, b] yoiku angka;
+cetakno("Nilai a:", a);
+cetakno("Nilai b:", b);
+
+// 3. Object Destructuring dengan Ganti Nama (dadi)
+iki iku { kota dadi kutho } yoiku pengguna;
+cetakno("Kutho:", kutho);
+
+// 4. Object Destructuring dengan Nilai Default
+iki iku { status yoiku "Aktif" } yoiku pengguna;
+cetakno("Status:", status);
+
+// 5. Destructuring di parameter fungsi
+gawe cetakInfo({ jeneng dadi jenengLengkap, umur dadi umurSaiki }) terus
+  cetakno(`Jeneng lengkap: ${jenengLengkap}, Umur saiki: ${umurSaiki}`);
+mbari
+
+cetakInfo(pengguna);

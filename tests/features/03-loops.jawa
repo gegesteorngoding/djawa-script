@@ -1,0 +1,11 @@
+// Test for and while loops
+
+kanggo (jarno i = 0; i < 3; i = i + 1) terus
+  cetakno("For loop: " + i);
+mbari
+
+jarno x = 0;
+selagi (x < 2) terus
+  cetakno("While loop: " + x);
+  x = x + 1;
+mbari

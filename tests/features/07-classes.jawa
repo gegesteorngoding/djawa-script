@@ -1,0 +1,26 @@
+// Test Classes and Inheritance
+
+kelas Hewan terus
+  wujudno(nama) terus
+    iki.nama yoiku nama;
+  mbari
+
+  bersuara() terus
+    cetakno(iki.nama + " bersuara.");
+  mbari
+mbari
+
+kelas Kucing turunan soko Hewan terus
+  wujudno(nama, warna) terus
+    induk(nama);
+    iki.warna yoiku warna;
+  mbari
+
+  meong() terus
+    cetakno(iki.nama + " si kucing " + iki.warna + " meong-meong!");
+  mbari
+mbari
+
+jarno kucingku yoiku Kucing anyar("Tom", "Oren");
+kucingku.bersuara();
+kucingku.meong();
