@@ -49,9 +49,15 @@ function transpile(code) {
   resultCode = resultCode.replace(/\\s+lek gak\\s+/g, ' : ');
 
   // Handle `for...in` loop
-  const forInRegex = /(kanggo)\\s+\\((iki iku|jarno)\\s+(\\w+)\\s+ing\\s+([\\w.]+)\\)\\s+terus([\\s\\S]*?)mbari/g;
+  const forInRegex = /(kanggo)\s+\((iki iku|jarno)\s+(\w+)\s+ing\s+([\w.]+)\)\s+terus([\s\S]*?)mbari/g;
   resultCode = resultCode.replace(forInRegex, (match, loopKeyword, varKeyword, keyVar, objectVar, body) => {
     return `for (${varKeyword} ${keyVar} in ${objectVar}) {${body}}`;
+  });
+
+  // Handle `for...of` loop
+  const forOfRegex = /(kanggo)\s+\((iki iku|jarno)\s+(\w+)\s+soko\s+([\w.]+)\)\s+terus([\s\S]*?)mbari/g;
+  resultCode = resultCode.replace(forOfRegex, (match, loopKeyword, varKeyword, itemVar, iterableVar, body) => {
+    return `for (${varKeyword} ${itemVar} of ${iterableVar}) {${body}}`;
   });
 
   // Handle Type Annotations for variables

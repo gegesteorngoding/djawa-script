@@ -931,3 +931,121 @@ console.log(+(5, 7));
 console.log(getUmur(1990));
 cetakInfo("Total", 100);"
 `;
+
+exports[`JawaScript Transpiler Snapshot Tests should correctly transpile 44-for-of-loop.jawa 1`] = `
+"
+
+
+console.log('--- Tes Loop Kanggo...Soko (for...of) ---');
+
+console.log('Iterasi liwat Array:');
+const daftarAngka = [10, 20, 30, 40];
+for (const angka of daftarAngka) {
+  console.log(angka);
+}
+
+console.log('Iterasi liwat String:');
+const jeneng = 'Slamet';
+for (const huruf of jeneng) {
+  console.log(huruf);
+}
+
+console.log('--- Rampung Tes Loop Kanggo...Soko ---');
+"
+`;
+
+exports[`JawaScript Transpiler Snapshot Tests should correctly transpile 45-symbol.jawa 1`] = `
+"
+
+
+console.log('--- Tes Tipe Data Symbol ---');
+
+
+const sim1 = Symbol();
+const sim2 = Symbol('deskripsi');
+
+console.log(typeof sim1);
+
+
+
+
+console.log(sim2.toString()); 
+
+
+const sim3 = Symbol('id');
+const sim4 = Symbol('id');
+console.log(sim3 === sim4); 
+
+
+const idUnik = Symbol('id_unik');
+const obyek = {};
+obyek[idUnik] = 'Nilai Rahasia';
+
+console.log(obyek[idUnik]);
+
+
+for (const kunci in obyek) {
+  console.log('Kunci ditemukan di for...in: ' + kunci); 
+}
+
+console.log(Object.keys(obyek).length); 
+
+console.log('--- Rampung Tes Symbol ---');
+"
+`;
+
+exports[`JawaScript Transpiler Snapshot Tests should correctly transpile 46-proxy-reflect.jawa 1`] = `
+"
+
+
+console.log('--- Tes Proxy (Proxy) & Reflect (Reflect) ---');
+
+
+const target = {
+  pesen: 'Halo Dunia',
+  nilai: 100
+};
+
+
+const penangan = {
+  
+  jupuk: function(obj, prop) {
+    console.log(\`Nyoba jupuk properti "\${prop}"\`);
+    
+    return Reflect.get(obj, prop);
+  },
+
+  
+  set: function(obj, prop, value) {
+    console.log(\`Nyoba masang properti "\${prop}" dadi "\${value}"\`);
+    if (prop === 'nilai' && typeof value ! === 'Number') {
+      throw new Error('Nilai kudu angka!');
+    }
+    
+    return Reflect.set(obj, prop, value);
+  }
+};
+
+
+const p = new Proxy(target, penangan);
+
+
+console.log('Moco pesen: ' + p.pesen);
+console.log('Moco nilai: ' + p.nilai);
+
+
+p.nilai = 200;
+console.log('Nilai new: ' + p.nilai);
+
+
+try {
+  p.nilai = 'dudu angka';
+} catch (e) {
+  console.log('Error ketangkep: ' + e.message);
+}
+
+console.log('Nilai akhir: ' + target.nilai); 
+
+console.log('--- Rampung Tes Proxy & Reflect ---');
+"
+`;

@@ -222,6 +222,37 @@ mbari
 // kota: Jogja
 ```
 
+### `for...of` Loop (`kanggo...soko...`)
+
+To iterate over the values of an iterable object (like an Array, String, Map, or Set), Jawascript provides the `kanggo...soko...` loop. This is different from `kanggo...ing` (`for...in`), which iterates over the keys or indices.
+
+- `kanggo (iki iku value soko iterable) terus ... mbari`: Iterates over the values of an iterable.
+
+```jawascript
+// Example with an Array
+iki iku woh_wohan yoiku ['apel', 'jeruk', 'mangga'];
+kanggo (iki iku woh soko woh_wohan) terus
+  cetakno(woh);
+mbari
+// Output:
+// apel
+// jeruk
+// mangga
+
+// Example with a String
+iki iku jeneng yoiku "Slamet";
+kanggo (iki iku huruf soko jeneng) terus
+  cetakno(huruf);
+mbari
+// Output:
+// S
+// l
+// a
+// m
+// e
+// t
+```
+
 - **Switch Statement**
   - `pilih (variable)`: A `switch` statement construct.
   - `kalo (value):`: A `case` block within a switch.
@@ -725,6 +756,72 @@ kucingku.mangan()  // Inherited method
 kucingku.meong()   // Own method
 ```
 
+## Metaprogramming: `Perantara` (Proxy) dan `Pantulan` (Reflect)
+
+Jawascript supports advanced metaprogramming through `Perantara` (Proxy) and `Pantulan` (Reflect) objects, allowing you to intercept and define custom behavior for fundamental language operations.
+
+-   `Perantara`: An object that wraps another object (the target) and intercepts operations like property lookup, assignment, and function invocation.
+-   `Pantulan`: A built-in object that provides static methods for the intercepted operations, allowing you to invoke the original default behavior from within your proxy handler.
+
+**Keywords:**
+
+| Javanese Keyword | JavaScript Equivalent | Description |
+| :--- | :--- | :--- |
+| `Perantara` | `Proxy` | The Proxy constructor. |
+| `Pantulan` | `Reflect` | The Reflect object. |
+| `Pantulan.jupuk` | `Reflect.get` | Retrieves a property from an object. |
+| `Pantulan.pasang` | `Reflect.set` | Sets a property on an object. |
+| `Pantulan.bangun` | `Reflect.construct` | Constructs a new object. |
+| `...` | `...` | And all other `Reflect` methods. |
+
+**Example:**
+Here's how to create a proxy that logs property accesses and validates new values before setting them.
+
+```jawascript
+// 1. The target object
+iki iku target yoiku {
+  pesen: 'Halo Dunia',
+  nilai: 100
+};
+
+// 2. The handler for the proxy
+iki iku penangan yoiku {
+  // Trap for getting a property
+  jupuk: gawe(obj, prop) terus
+    cetakno(`Nyoba jupuk properti: "${prop}"`);
+    // Use Pantulan.jupuk for default behavior
+    balekno Pantulan.jupuk(obj, prop);
+  mbari,
+
+  // Trap for setting a property
+  pasang: gawe(obj, prop, value) terus
+    cetakno(`Nyoba masang "${prop}" dadi "${value}"`);
+    lek (prop plek 'nilai' lan tipene value ora plek 'Angka') terus
+      uncalen anyar Kesalahan('Nilai kudu angka!');
+    mbari
+    // Use Pantulan.pasang for default behavior
+    balekno Pantulan.pasang(obj, prop, value);
+  mbari
+};
+
+// 3. Create the Proxy object
+iki iku p yoiku anyar Perantara(target, penangan);
+
+// 4. Trigger the 'jupuk' trap
+cetakno(p.pesen); // -> "Nyoba jupuk properti: "pesen""
+                 // -> "Halo Dunia"
+
+// 5. Trigger the 'pasang' trap (success)
+p.nilai yoiku 200; // -> "Nyoba masang "nilai" dadi "200""
+
+// 6. Trigger the 'pasang' trap (failure)
+cobak terus
+  p.nilai yoiku 'dudu angka'; // -> "Nyoba masang "nilai" dadi "dudu angka""
+mbari nyekel (e) terus
+  cetakno('Error: ' tambah e.message); // -> "Error: Nilai kudu angka!"
+mbari
+```
+
 ## Built-in Functions
 
 JawaScript provides access to several common built-in JavaScript objects and global functions.
@@ -798,6 +895,24 @@ cetakno("Object.assign: " + DataJSON.stringkan(obj3)); // Output: {"a":1,"b":2}
 cetakno("Object.is(1, 1): " tambah Obyek.iku(1, 1)); // Output: tenan
 cetakno("Object.keys: " + Obyek.kunci(obj3)); // Output: a,b
 cetakno("Array.isArray([]): " + Daftar.ikiDaftar(Daftar anyar())); // Output: tenan
+```
+
+**Example for `Simbol`:**
+`Simbol` creates a unique value that can be used as a property key in an object, preventing name collisions.
+
+```jawascript
+// Example for Simbol
+iki iku idUnik yoiku Simbol('id')
+iki iku pangguna yoiku {
+  jeneng: 'Slamet'
+}
+
+pangguna[idUnik] yoiku '987-xyz'
+
+// The symbol key is not visible in normal iterations
+cetakno(Obyek.kunci(pangguna)) // -> ['jeneng']
+cetakno(pangguna.jeneng)      // -> 'Slamet'
+cetakno(pangguna[idUnik])     // -> '987-xyz'
 ```
 
 ### `Mtk` Object (for `Math`)

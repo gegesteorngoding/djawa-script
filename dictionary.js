@@ -126,6 +126,23 @@ const dictionary = {
   'PolaTeks': 'RegExp',
   'Tanggalan': 'Date',
   'DataJSON': 'JSON',
+  'Perantara': 'Proxy',
+
+  // --- Reflect (Pantulan) ---
+  'Pantulan': 'Reflect',
+  'Pantulan.terapno': 'Reflect.apply',
+  'Pantulan.bangun': 'Reflect.construct',
+  'Pantulan.definisiProperti': 'Reflect.defineProperty',
+  'Pantulan.hapusProperti': 'Reflect.deleteProperty',
+  'Pantulan.jupuk': 'Reflect.get',
+  'Pantulan.jupukDeskripsiProperti': 'Reflect.getOwnPropertyDescriptor',
+  'Pantulan.jupukPrototipe': 'Reflect.getPrototypeOf',
+  'Pantulan.duwe': 'Reflect.has',
+  'Pantulan.isoDitambahi': 'Reflect.isExtensible',
+  'Pantulan.kunciDhewe': 'Reflect.ownKeys',
+  'Pantulan.cegahEkstensi': 'Reflect.preventExtensions',
+  'Pantulan.pasang': 'Reflect.set',
+  'Pantulan.pasangPrototipe': 'Reflect.setPrototypeOf',
 
   // --- Static Methods & Properties ---
   // These need to be handled carefully because of the dot notation
