@@ -124,12 +124,11 @@ mbari
 
 ### Optional Type System
 
-Jawascript now supports an optional static type system, similar to GDScript or TypeScript. This allows you to add type annotations to your variables, function parameters, and function return types. While not mandatory, using types can significantly improve code readability, help catch errors early during development, and enhance IDE support with better autocompletion and refactoring tools.
+Jawascript supports an optional static type system, similar to GDScript or TypeScript. This allows you to add type annotations to your variables, function parameters, and function return types. While not mandatory, using types can significantly improve code readability, and help catch errors early during development.
 
 **Key Benefits:**
 -   **Early Error Detection:** Catch type-related bugs before runtime.
 -   **Improved Readability:** Code becomes self-documenting, making it easier to understand.
--   **Enhanced IDE Support:** Better autocompletion, type-checking, and refactoring capabilities.
 
 **Syntax:**
 
