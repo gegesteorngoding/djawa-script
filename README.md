@@ -2,7 +2,7 @@
 ---
 # JawaScript Project
 
-JawaScript is a transpiler for a simple programming language inspired by Javanese, designed to be more expressive and readable for developers familiar with the language.
+JawaScript is a transpiler for a simple programming language inspired by Javanese and other programming languages, such as jaksel-script.
 
 ## Table of Contents
 
