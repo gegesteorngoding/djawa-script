@@ -1127,6 +1127,10 @@ Jawascript provides a Command Line Interface (CLI) tool named `djawa` to help yo
     ```bash
     npm install -g @jawirhytam/jawirscript
     ```
+    Or, to install the latest version directly from GitHub:
+    ```bash
+    npm install -g https://github.com/gegesteorngoding/djawa-script
+    ```
 
 ### Commands
 
