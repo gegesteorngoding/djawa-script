@@ -3,4 +3,10 @@
 iki iku a yoiku 1
 iki iku b yoiku 1
 
-cetakno(a tambah b)
+jarno c yoiku a tambah b
+
+cetakno(c)
+
+lek (c plek 2) terus
+    cetakno("This is correct")
+mbari
