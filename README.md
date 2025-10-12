@@ -1,6 +1,6 @@
 [English](./README.md) | [Bahasa Indonesia](./README-ID.md)
 ---
-# JawaScript Project
+# DjawaScript Project
 
 JawaScript is a transpiler for a simple programming language inspired by Javanese and other programming languages, such as jaksel-script.
 
