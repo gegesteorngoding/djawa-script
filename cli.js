@@ -23,6 +23,8 @@ Commands:
 Examples:
   djawa run example.jawa
   djawa make myapp.jawa
+  
+// Im a new soul, I came to this strange world ~
   `);
 }
 
