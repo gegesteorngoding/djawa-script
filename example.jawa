@@ -1,12 +1,6 @@
 // example.jawa
 
-iki iku a yoiku 1
-iki iku b yoiku 1
+jarno a yoiku 1
+jarno b yoiku 2
 
-jarno c yoiku a tambah b
-
-cetakno(c)
-
-lek (c plek 2) terus
-    cetakno("This is correct")
-mbari
+cetakno(a)

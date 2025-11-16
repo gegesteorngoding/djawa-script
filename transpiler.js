@@ -5,6 +5,41 @@ function escapeRegex(string) {
   return string.replace(/[.*+?^${}()|[\\]/g, '\\$&');
 }
 
+// Helper function to get line and column from an index
+function getLineAndColumn(code, index) {
+  const textBefore = code.substring(0, index);
+  const lines = textBefore.split('\n');
+  const line = lines.length;
+  const column = lines[lines.length - 1].length + 1;
+  return { line, column };
+}
+
+function validateBlocks(code) {
+  const blockStack = [];
+  const blockRegex = /\b(terus|mbari)\b/g;
+  let match;
+
+  while ((match = blockRegex.exec(code)) !== null) {
+    const keyword = match[0];
+    const location = getLineAndColumn(code, match.index);
+
+    if (keyword === 'terus') {
+      blockStack.push({ keyword, ...location });
+    } else if (keyword === 'mbari') {
+      if (blockStack.length === 0) {
+        throw new Error(`Syntax Error: Found 'mbari' without a matching 'terus' at line ${location.line}, column ${location.column}.`);
+      }
+      blockStack.pop();
+    }
+  }
+
+  if (blockStack.length > 0) {
+    const unclosedBlock = blockStack[blockStack.length - 1];
+    throw new Error(`Syntax Error: Block 'terus' at line ${unclosedBlock.line}, column ${unclosedBlock.column} was never closed with 'mbari'.`);
+  }
+}
+
+
 const boundaryKeywords = {};
 const methodKeywords = {};
 
@@ -23,6 +58,9 @@ const sortedMethodKeys = Object.keys(methodKeywords).sort((a, b) => b.length - a
 const methodRegex = new RegExp(sortedMethodKeys.map(escapeRegex).join('|'), 'g');
 
 function transpile(code) {
+  // New, more robust block validation
+  validateBlocks(code);
+
   const literals = [];
   // 1. Isolate and process template literals first.
   let processedCode = code.replace(/`([\s\S]*?)`/g, (match, content) => {
@@ -175,13 +213,6 @@ function transpile(code) {
   resultCode = resultCode.replace(/\btuple\((.*?)\)/g, (match, content) => {
     return `Object.freeze([${content}])`;
   });
-
-  const terusCount = (resultCode.match(/\bterus\b/g) || []).length;
-  const mbariCount = (resultCode.match(/\bmbari\b/g) || []).length;
-
-  if (terusCount !== mbariCount) {
-    throw new Error('your code is not being closed correctly');
-  }
 
   // First, replace all method calls
   resultCode = resultCode.replace(methodRegex, match => methodKeywords[match]);

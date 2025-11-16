@@ -4,6 +4,7 @@ import fs from 'fs';
 import path from 'path';
 import { execFile } from 'child_process';
 import transpile from './transpiler.js';
+import { lint } from './linter.js'; // Impor fungsi lint
 import promptSync from 'prompt-sync';
 import { fileURLToPath } from 'url';
 
@@ -16,12 +17,14 @@ Usage: djawa <command> [options]
 Commands:
   run <file>         Transpile and run a .jawa file.
   build <file>       Transpile a .jawa file to a .js file.
+  lint <file>        Analyze a .jawa file for potential issues.
   make <file>        Create a new .jawa file from a template.
   version, -v        Show the version of JawaScript.
   help, -h           Show this help message.
 
 Examples:
   djawa run example.jawa
+  djawa lint myapp.jawa
   djawa make myapp.jawa
   
 // Im a new soul, I came to this strange world ~
@@ -105,6 +108,32 @@ function buildFile(fileName) {
     console.log(`Success: Transpiled '${fileName}' to '${outputFileName}'.`);
 }
 
+function lintFile(fileName) {
+  if (!fileName) {
+    console.error('Error: Please provide a file to lint.');
+    console.log('Example: djawa lint myapp.jawa');
+    return;
+  }
+  if (!fs.existsSync(fileName)) {
+    console.error(`Error: File not found at '${fileName}'`);
+    process.exit(1);
+  }
+
+  console.log(`Analyzing '${fileName}'...`);
+
+  const code = fs.readFileSync(fileName, 'utf8');
+  const warnings = lint(code);
+
+  if (warnings.length === 0) {
+    console.log('✅ No issues found.');
+  } else {
+    console.log(`\nFound ${warnings.length} issue(s):`);
+    warnings.forEach(warning => {
+      console.log(`  - ${fileName}:${warning.line}:${warning.column} - ${warning.message}`);
+    });
+  }
+}
+
 
 // --- MAIN LOGIC ---
 
@@ -117,6 +146,10 @@ switch (command) {
   
   case 'build':
     buildFile(args[0]);
+    break;
+
+  case 'lint':
+    lintFile(args[0]);
     break;
 
   case 'make':
