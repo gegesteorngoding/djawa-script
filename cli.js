@@ -2,6 +2,7 @@
 
 import fs from 'fs';
 import path from 'path';
+import os from 'os'; // Import the 'os' module
 import { execFile, spawn } from 'child_process'; // Import spawn for Electron
 import transpile from './transpiler.js';
 import { lint } from './linter.js'; // Impor fungsi lint
@@ -94,33 +95,78 @@ async function runNodeFile(fileName, code) {
 
 async function runKurokuroFile(fileName) {
   const absoluteJawaFilePath = path.resolve(fileName);
+  const projectDir = process.cwd();
+  let runnerDir;
   
-  // Assume the command is run from within the kurokuro project directory
-  const runnerDir = process.cwd();
-  const tempScriptPath = path.join(runnerDir, 'temp_script.js');
+  // --- Smart Runner-Path Detection ---
+  // 1. Check for local install (end-user case)
+  const localRunnerPath = path.join(projectDir, 'node_modules', '@jawirhytam', 'kurokuro');
+  
+  // 2. Check if CWD is the kurokuro project itself (developer case)
+  const cwdPackageJsonPath = path.join(projectDir, 'package.json');
+  let isCwdKurokuro = false;
+  if (fs.existsSync(cwdPackageJsonPath)) {
+    try {
+      const pkg = JSON.parse(fs.readFileSync(cwdPackageJsonPath, 'utf8'));
+      if (pkg.name === '@jawirhytam/kurokuro') {
+        isCwdKurokuro = true;
+      }
+    } catch (e) { /* ignore parse errors */ }
+  }
 
-  // Check if the runner directory looks like a kurokuro project
+  if (fs.existsSync(localRunnerPath)) {
+    runnerDir = localRunnerPath;
+    console.log('Kurokuro runner found in node_modules.');
+  } else if (isCwdKurokuro) {
+    runnerDir = projectDir;
+    console.log('Running in Kurokuro development mode.');
+  } else {
+    console.error("\n❌ Error: Kurokuro runner not found.");
+    console.error("This script requires the Kurokuro graphics library.");
+    console.error("Please install it in your project by running:");
+    console.error("\n  npm install @jawirhytam/kurokuro\n");
+    process.exit(1);
+  }
+  
   const electronExecutablePath = path.join(runnerDir, 'node_modules', '.bin', 'electron');
+
   if (!fs.existsSync(electronExecutablePath)) {
-    console.error(`Error: Electron executable not found in '${runnerDir}'.`);
-    console.error('Please make sure you are running this command from your kurokuro project directory.');
+     console.error(`\n❌ Error: Electron executable not found in the Kurokuro runner directory.`);
+     console.error(`Please ensure Kurokuro's dependencies are installed: cd ${runnerDir} && npm install`);
+     process.exit(1);
+  }
+
+  // Transpile to a temporary file, read its content, then delete it.
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'djawa-'));
+  const tempScriptPath = path.join(tempDir, 'temp_script.js');
+  let scriptContent = '';
+  try {
+    buildFile(absoluteJawaFilePath, tempScriptPath);
+    scriptContent = fs.readFileSync(tempScriptPath, 'utf8');
+  } finally {
+    fs.rmSync(tempDir, { recursive: true, force: true });
+  }
+
+  if (!scriptContent) {
+    console.error('Error: Failed to read transpiled script content.');
     process.exit(1);
   }
 
-  // Transpile the .jawa file to temp_script.js in the runner directory
-  buildFile(absoluteJawaFilePath, tempScriptPath);
-
-  console.log(`Launching KuroKuro for ${fileName}...`);
-  // Launch Electron from the runner directory
+  // Launch Electron with the script content in an environment variable
+  console.log(`Launching Kurokuro for ${fileName}...`);
   const electronProcess = spawn(electronExecutablePath, ['.'], {
     cwd: runnerDir,
-    detached: true, // Detach the child process
-    stdio: 'ignore', // Ignore stdio to fully decouple
-    env: { ...process.env, KUROKURO_JAWA_FILE: absoluteJawaFilePath } // Pass env var explicitly
+    detached: true, // Re-enable detached mode
+    stdio: 'ignore', // Re-enable ignore stdio
+    env: {
+      ...process.env,
+      KUROKURO_SCRIPT_CONTENT: scriptContent
+    }
   });
-  electronProcess.unref(); // Allow the parent process to exit independently
+  electronProcess.unref();
 
-  console.log(`To stop the KuroKuro window, close its window manually.`);
+  console.log(`Kurokuro app launched. You can close this terminal or continue working.`);
+  console.log(`To stop the Kurokuro app, close its window manually.`);
 }
 
 async function runFile(fileName) {
