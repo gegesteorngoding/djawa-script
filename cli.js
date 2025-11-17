@@ -2,7 +2,7 @@
 
 import fs from 'fs';
 import path from 'path';
-import { execFile } from 'child_process';
+import { execFile, spawn } from 'child_process'; // Import spawn for Electron
 import transpile from './transpiler.js';
 import { lint } from './linter.js'; // Impor fungsi lint
 import promptSync from 'prompt-sync';
@@ -15,15 +15,19 @@ function showHelp() {
 Usage: djawa <command> [options]
 
 Commands:
-  run <file>         Transpile and run a .jawa file.
+  run <file>         Transpile and run a .jawa file. If a graphics file, it opens in Kurokuro.
   build <file>       Transpile a .jawa file to a .js file.
   lint <file>        Analyze a .jawa file for potential issues.
   make <file>        Create a new .jawa file from a template.
   version, -v        Show the version of JawaScript.
   help, -h           Show this help message.
 
+Options for build:
+  --output <path>    Specify the output file path for the transpiled .js.
+
 Examples:
   djawa run example.jawa
+  djawa build myapp.jawa --output dist/myapp.js
   djawa lint myapp.jawa
   djawa make myapp.jawa
   
@@ -42,7 +46,7 @@ function showVersion() {
 function makeFile(fileName) {
   if (!fileName) {
     console.error('Error: Please provide a file name.');
-    console.log('Example: jawir make myapp.jawa');
+    console.log('Example: djawa make myapp.jawa');
     return;
   }
 
@@ -67,34 +71,36 @@ async function runFile(fileName) {
     process.exit(1);
   }
   
-  const code = fs.readFileSync(fileName, 'utf8');
-  const jsCode = transpile(code);
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = path.dirname(__filename);
+  const projectRoot = path.resolve(__dirname, '..'); // Assuming djawa-script is in project root
+  const kurokuroDir = path.join(projectRoot, 'kurokuro');
+  const tempScriptPath = path.join(kurokuroDir, 'temp_script.js');
+  const absoluteJawaFilePath = path.resolve(fileName);
 
-  // Make prompt available globally for the transpiled code
-  global.prompt = promptSync();
+  // Transpile the .jawa file to temp_script.js in the kurokuro directory
+  buildFile(fileName, tempScriptPath);
 
-  if (jsCode.includes('import') || jsCode.includes('export')) {
-    const outputFileName = path.basename(fileName, '.jawa') + '.js';
-    fs.writeFileSync(outputFileName, jsCode);
+  // Set environment variable for Electron to know which .jawa file to watch
+  process.env.KUROKURO_JAWA_FILE = absoluteJawaFilePath;
 
-    const child = execFile('node', [outputFileName]);
-    child.stdout.pipe(process.stdout);
-    child.stderr.pipe(process.stderr);
-    child.on('exit', () => {
-        // Optional: Clean up the generated .js file
-        // fs.unlinkSync(outputFileName);
-    });
-  } else {
-    try {
-      const encodedJsCode = encodeURIComponent(jsCode);
-      await import(`data:text/javascript,${encodedJsCode}`);
-    } catch (error) {
-      console.error('An error occurred during execution:', error.message);
-    }
-  }
+  const electronExecutablePath = path.join(kurokuroDir, 'node_modules', '.bin', 'electron');
+
+  console.log(`Launching Kurokuro for ${fileName}...`);
+  // Launch Electron from the kurokuro directory
+  const electronProcess = spawn(electronExecutablePath, ['.'], {
+    cwd: kurokuroDir,
+    detached: true, // Detach the child process
+    stdio: 'ignore', // Ignore stdio to fully decouple
+    env: { ...process.env, KUROKURO_JAWA_FILE: absoluteJawaFilePath } // Pass env var explicitly
+  });
+  electronProcess.unref(); // Allow the parent process to exit independently
+
+  console.log(`Kurokuro app launched. You can close this terminal or continue working.`);
+  console.log(`To stop the Kurokuro app, close its window manually.`);
 }
 
-function buildFile(fileName) {
+function buildFile(fileName, outputPath = null) {
     if (!fs.existsSync(fileName)) {
         console.error(`Error: File not found at '${fileName}'`);
         process.exit(1);
@@ -102,7 +108,7 @@ function buildFile(fileName) {
 
     const code = fs.readFileSync(fileName, 'utf8');
     const jsCode = transpile(code);
-    const outputFileName = path.basename(fileName, '.jawa') + '.js';
+    const outputFileName = outputPath || (path.basename(fileName, '.jawa') + '.js');
 
     fs.writeFileSync(outputFileName, jsCode);
     console.log(`Success: Transpiled '${fileName}' to '${outputFileName}'.`);
@@ -137,23 +143,37 @@ function lintFile(fileName) {
 
 // --- MAIN LOGIC ---
 
-const [command, ...args] = process.argv.slice(2);
+const args = process.argv.slice(2);
+let command = args[0];
+let fileName = args[1];
+let outputPath = null;
+
+// Parse options for build command
+if (command === 'build') {
+  for (let i = 2; i < args.length; i++) {
+    if (args[i] === '--output' && args[i + 1]) {
+      outputPath = args[i + 1];
+      i++; // Skip next arg as it's the output path
+    }
+  }
+}
+
 
 switch (command) {
   case 'run':
-    runFile(args[0]);
+    runFile(fileName);
     break;
   
   case 'build':
-    buildFile(args[0]);
+    buildFile(fileName, outputPath);
     break;
 
   case 'lint':
-    lintFile(args[0]);
+    lintFile(fileName);
     break;
 
   case 'make':
-    makeFile(args[0]);
+    makeFile(fileName);
     break;
 
   case 'version':
