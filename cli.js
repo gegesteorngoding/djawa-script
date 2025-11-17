@@ -2,6 +2,7 @@
 
 import fs from 'fs';
 import path from 'path';
+import os from 'os';
 import { execFile, spawn } from 'child_process'; // Import spawn for Electron
 import transpile from './transpiler.js';
 import { lint } from './linter.js'; // Impor fungsi lint
@@ -65,39 +66,123 @@ function makeFile(fileName) {
   console.log(`Success: File '${correctedFileName}' created.`);
 }
 
-async function runFile(fileName) {
-  if (!fs.existsSync(fileName)) {
-    console.error(`Error: File not found at '${fileName}'`);
+async function runNodeFile(fileName, code) {
+  const jsCode = transpile(code);
+
+  // Make prompt available globally for the transpiled code
+  global.prompt = promptSync();
+
+  if (jsCode.includes('import') || jsCode.includes('export')) {
+    const outputFileName = path.basename(fileName, '.jawa') + '.js';
+    fs.writeFileSync(outputFileName, jsCode);
+
+    const child = execFile('node', [outputFileName]);
+    child.stdout.pipe(process.stdout);
+    child.stderr.pipe(process.stderr);
+    child.on('exit', () => {
+        // Optional: Clean up the generated .js file
+        // fs.unlinkSync(outputFileName);
+    });
+  } else {
+    try {
+      const encodedJsCode = encodeURIComponent(jsCode);
+      await import(`data:text/javascript,${encodedJsCode}`);
+    } catch (error) {
+      console.error('An error occurred during execution:', error.message);
+    }
+  }
+}
+
+async function runKurokuroFile(fileName) {
+  const absoluteJawaFilePath = path.resolve(fileName);
+  const projectDir = process.cwd();
+  let runnerDir;
+  
+  // --- Smart Runner-Path Detection ---
+  // 1. Check for local install (end-user case)
+  const localRunnerPath = path.join(projectDir, 'node_modules', '@jawirhytam', 'kurokuro');
+  
+  // 2. Check if CWD is the kurokuro project itself (developer case)
+  const cwdPackageJsonPath = path.join(projectDir, 'package.json');
+  let isCwdKurokuro = false;
+  if (fs.existsSync(cwdPackageJsonPath)) {
+    try {
+      const pkg = JSON.parse(fs.readFileSync(cwdPackageJsonPath, 'utf8'));
+      if (pkg.name === '@jawirhytam/kurokuro') {
+        isCwdKurokuro = true;
+      }
+    } catch (e) { /* ignore parse errors */ }
+  }
+
+  if (fs.existsSync(localRunnerPath)) {
+    runnerDir = localRunnerPath;
+    console.log('Kurokuro runner found in node_modules.');
+  } else if (isCwdKurokuro) {
+    runnerDir = projectDir;
+    console.log('Running in Kurokuro development mode.');
+  } else {
+    console.error("\n❌ Error: Kurokuro runner not found.");
+    console.error("This script requires the Kurokuro graphics library.");
+    console.error("Please install it in your project by running:");
+    console.error("\n  npm install @jawirhytam/kurokuro\n");
     process.exit(1);
   }
   
-  const __filename = fileURLToPath(import.meta.url);
-  const __dirname = path.dirname(__filename);
-  const projectRoot = path.resolve(__dirname, '..'); // Assuming djawa-script is in project root
-  const kurokuroDir = path.join(projectRoot, 'kurokuro');
-  const tempScriptPath = path.join(kurokuroDir, 'temp_script.js');
-  const absoluteJawaFilePath = path.resolve(fileName);
+  const electronExecutablePath = path.join(runnerDir, 'node_modules', '.bin', 'electron');
 
-  // Transpile the .jawa file to temp_script.js in the kurokuro directory
-  buildFile(fileName, tempScriptPath);
+  if (!fs.existsSync(electronExecutablePath)) {
+     console.error(`\n❌ Error: Electron executable not found in the Kurokuro runner directory.`);
+     console.error(`Please ensure Kurokuro's dependencies are installed: cd ${runnerDir} && npm install`);
+     process.exit(1);
+  }
 
-  // Set environment variable for Electron to know which .jawa file to watch
-  process.env.KUROKURO_JAWA_FILE = absoluteJawaFilePath;
+  // Transpile to a temporary file, read its content, then delete it.
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'djawa-'));
+  const tempScriptPath = path.join(tempDir, 'temp_script.js');
+  let scriptContent = '';
+  try {
+    buildFile(absoluteJawaFilePath, tempScriptPath);
+    scriptContent = fs.readFileSync(tempScriptPath, 'utf8');
+  } finally {
+    fs.rmSync(tempDir, { recursive: true, force: true });
+  }
 
-  const electronExecutablePath = path.join(kurokuroDir, 'node_modules', '.bin', 'electron');
+  if (!scriptContent) {
+    console.error('Error: Failed to read transpiled script content.');
+    process.exit(1);
+  }
 
+  // Launch Electron with the script content in an environment variable
   console.log(`Launching Kurokuro for ${fileName}...`);
-  // Launch Electron from the kurokuro directory
   const electronProcess = spawn(electronExecutablePath, ['.'], {
-    cwd: kurokuroDir,
-    detached: true, // Detach the child process
-    stdio: 'ignore', // Ignore stdio to fully decouple
-    env: { ...process.env, KUROKURO_JAWA_FILE: absoluteJawaFilePath } // Pass env var explicitly
+    cwd: runnerDir,
+    detached: true,
+    stdio: 'ignore',
+    env: {
+      ...process.env,
+      KUROKURO_SCRIPT_CONTENT: scriptContent
+    }
   });
-  electronProcess.unref(); // Allow the parent process to exit independently
+  electronProcess.unref();
 
-  console.log(`Kurokuro app launched. You can close this terminal or continue working.`);
-  console.log(`To stop the Kurokuro app, close its window manually.`);
+  console.log(`Kurokuro app launched.`);
+}
+
+async function runFile(fileName) {
+  const absoluteJawaFilePath = path.resolve(fileName);
+  if (!fs.existsSync(absoluteJawaFilePath)) {
+    console.error(`Error: File not found at '${absoluteJawaFilePath}'`);
+    process.exit(1);
+  }
+
+  const fileContent = fs.readFileSync(absoluteJawaFilePath, 'utf8');
+
+  // Check for the Kurokuro directive
+  if (fileContent.trim().startsWith('// @kurokuro: pake')) {
+    runKurokuroFile(fileName);
+  } else {
+    runNodeFile(fileName, fileContent);
+  }
 }
 
 function buildFile(fileName, outputPath = null) {
